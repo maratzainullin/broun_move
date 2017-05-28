@@ -4,7 +4,7 @@
 #include <cmath>
 using namespace std;
 
-const float DT = 0.01;
+const float DT = 0.01; //шаг времени
 
 struct P    //Частица
 {
@@ -21,8 +21,8 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     for (vector<P>::iterator i = p.begin(); i != p.end(); ++i)
-    {
-        if (i -> m <= 2)
+    { //Перебираем вектор частиц
+        if (i -> m <= 2) //Маленькие рисуем точками
         {
             glPointSize(2);
             glBegin(GL_POINTS);
@@ -32,7 +32,7 @@ void display()
         else
         {
             glBegin(GL_LINES);
-            for (int a = 0; a < 36; ++a)
+            for (int a = 0; a < 36; ++a) //рисуем большую частицу, 36 угольник, радиус=массе
             {
                 float x = i -> m * cos(a * M_PI / 18);
                 float y = i -> m * sin(a * M_PI / 18);
@@ -47,15 +47,15 @@ void display()
     glutSwapBuffers();
 }
 
-void timer(int = 0)
+void timer(int = 0) //тут таймер
 {
     for (vector<P>::iterator i = p.begin(); i != p.end(); ++i)
         for (vector<P>::iterator j = p.begin(); j != p.end(); ++j)
-            if (i != j)
+            if (i != j) //для разных частиц считаем взаимодействие
             {
                 float d = sqrt((i -> x - j -> x) * (i -> x - j -> x) + (i -> y - j -> y) * (i -> y - j -> y));
-                if (d < i -> m + j -> m)
-                {
+                if (d < i -> m + j -> m) //если расстояние меньше радиуса
+                {//отталкивание
                     float f = 50 * (i -> m + j -> m - d);
                     i -> vx += f * (i -> x - j -> x) / d / i -> m * DT;
                     i -> vy += f * (i -> y - j -> y) / d / i -> m * DT;
@@ -63,8 +63,9 @@ void timer(int = 0)
                     j -> vy -= f * (i -> y - j -> y) / d / j -> m * DT;
                 }
             }
+
     for (vector<P>::iterator i = p.begin(); i != p.end(); ++i)
-    {
+    {//считаем координаты частиц по их скоростям, край экрана -- порталы
         i -> x += i -> vx * DT;
         i -> y += i -> vy * DT;
         if (i -> x < 0)
